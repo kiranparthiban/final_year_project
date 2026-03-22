@@ -51,6 +51,21 @@ const List<WhisperModel> availableModels = [
           'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-base.en/resolve/main/base.en-tokens.txt',
     },
   ),
+  WhisperModel(
+    name: 'whisper-small.en-int8',
+    displayName: 'Whisper Small English (375 MB) - Best accuracy',
+    encoderFile: 'small.en-encoder.int8.onnx',
+    decoderFile: 'small.en-decoder.int8.onnx',
+    tokensFile: 'small.en-tokens.txt',
+    files: {
+      'small.en-encoder.int8.onnx':
+          'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/small.en-encoder.int8.onnx',
+      'small.en-decoder.int8.onnx':
+          'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/small.en-decoder.int8.onnx',
+      'small.en-tokens.txt':
+          'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/small.en-tokens.txt',
+    },
+  ),
 ];
 
 class ModelManager {
