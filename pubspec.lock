@@ -49,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  build_cli_annotations:
-    dependency: transitive
-    description:
-      name: build_cli_annotations
-      sha256: b59d2769769efd6c9ff6d4c4cede0be115a566afc591705c2040b707534b1172
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   characters:
     dependency: transitive
     description:
@@ -336,14 +328,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
-  package_config:
-    dependency: transitive
-    description:
-      name: package_config
-      sha256: f096c55ebb7deb7e384101542bfba8c52696c1b56fca2eb62827989ef2353bbc
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   path:
     dependency: transitive
     description:
@@ -472,22 +456,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
-  pub_semver:
-    dependency: transitive
-    description:
-      name: pub_semver
-      sha256: "5bfcf68ca79ef689f8990d1160781b4bad40a3bd5e5218ad4076ddb7f4081585"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
-  pubspec_parse:
-    dependency: transitive
-    description:
-      name: pubspec_parse
-      sha256: "0560ba233314abbed0a48a2956f7f022cce7c3e1e73df540277da7544cad4082"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.0"
   rive:
     dependency: "direct main"
     description:
@@ -504,6 +472,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.15"
+  sherpa_onnx:
+    dependency: "direct main"
+    description:
+      name: sherpa_onnx
+      sha256: "7958f9449e904c57eca69c2155ce25d896a4bd77cc455ab8a8c7b6fa314505e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.32"
+  sherpa_onnx_android:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_android
+      sha256: f52b3b9e176e1ff7340d3cb1f05b061a757e72930d78715c85555c229d09df09
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.32"
+  sherpa_onnx_ios:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_ios
+      sha256: "99343ecf3247c45389db0e54219f0dfdd41a00c4ee3098f73cc969cceae9f4d6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.32"
+  sherpa_onnx_linux:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_linux
+      sha256: "5b45b20e0e1122ebd30baf5b9849f5a6cc9e98d1261f56ede6069ac20172d017"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.32"
+  sherpa_onnx_macos:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_macos
+      sha256: "3a06f7eea15fd8469992a403b1e139f9ffa10787dca902bf77bcfdb3b86bfc96"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.32"
+  sherpa_onnx_windows:
+    dependency: transitive
+    description:
+      name: sherpa_onnx_windows
+      sha256: "5a9a31b54ac63a76ccb732a1b172dd7a11c2667f7e0ae9edc056871cfa8ca4ea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.32"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -589,14 +605,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.3.0"
-  vosk_flutter_2:
-    dependency: "direct main"
-    description:
-      name: vosk_flutter_2
-      sha256: d638f300e14f56cd292be7200b495cee62cd6f08e4ef09f980578a26c56995db
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   web:
     dependency: transitive
     description:

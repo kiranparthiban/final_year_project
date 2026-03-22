@@ -1,14 +1,10 @@
-// imports remain unchanged
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/data/audio_analysis_model.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/edit_drawer.dart';
-import 'package:vosk_flutter_2/vosk_flutter_2.dart';
-// Add new widget imports
+import 'package:test_audio_analysis_app/core/services/transcription_service.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/loading_indicator.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/audio_waveform_selector.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/audio_player_controls.dart';
@@ -17,13 +13,13 @@ import 'package:test_audio_analysis_app/features/about/presentation/pages/about_
 
 class PlaybackPage extends StatefulWidget {
   final String filePath;
-  final String selectedModelName;
+  final String selectedModelPath;
   final double screenWidth;
 
   const PlaybackPage(
       {super.key,
       required this.filePath,
-      required this.selectedModelName,
+      required this.selectedModelPath,
       required this.screenWidth});
 
   @override
@@ -42,11 +38,7 @@ class _PlaybackPageState extends State<PlaybackPage> {
   double _loadingProgress = 0.0;
   AudioAnalysisModel audioAnalysisModel = AudioAnalysisModel();
 
-  final VoskFlutterPlugin _voskFlutterPlugin = VoskFlutterPlugin.instance();
-  Model? _voskModel;
-
   List<Map<String, dynamic>> words = [];
-  bool isModelLoaded = false;
 
   final ScrollController _scrollController = ScrollController();
   int _lastHighlightedIndex = -1;
@@ -75,7 +67,6 @@ class _PlaybackPageState extends State<PlaybackPage> {
         (localX - _selectionEndPx!).abs() < 20) {
       _isDraggingEnd = true;
     } else {
-      // Start new selection
       setState(() {
         _selectionStartPx = localX;
         _selectionEndPx = localX;
@@ -109,7 +100,7 @@ class _PlaybackPageState extends State<PlaybackPage> {
     super.initState();
     playerController = PlayerController();
     loadWaveform();
-    loadModelAndTranscribe();
+    _startTranscription();
 
     _playerState =
         playerController.onCurrentDurationChanged.listen((milliseconds) {
@@ -141,87 +132,58 @@ class _PlaybackPageState extends State<PlaybackPage> {
     playerController.setFinishMode(finishMode: FinishMode.pause);
   }
 
-  void handleConversion() async {
-    String? pcmFile = await audioAnalysisModel.convertToPCM(widget.filePath);
-    if (pcmFile != null) {
-      transcribeAudio(pcmFile);
-    }
-  }
-
-  Future<void> loadModelAndTranscribe() async {
+  Future<void> _startTranscription() async {
     try {
-      await audioAnalysisModel.checkModelFile(
-          selectedModelName: widget.selectedModelName);
-      String modelPath = await ModelLoader()
-          .loadFromAssets("assets/models/${widget.selectedModelName}.zip");
-      _voskModel = await _voskFlutterPlugin.createModel(modelPath);
-      if (!mounted) return;
-      setState(() => isModelLoaded = true);
-      handleConversion();
-    } catch (e) {
-      print("Model load error: $e");
-    }
-  }
+      // Convert audio to PCM
+      setState(() {
+        _loadingProgress = 0.05;
+      });
 
-  Future<void> transcribeAudio(String convertedFilePath) async {
-    try {
-      List<Map<String, dynamic>> finalWords = [];
-      const int sampleRate = 16000;
-      const int chunkSize = 4000;
-
-      final recognizer = await _voskFlutterPlugin.createRecognizer(
-        model: _voskModel!,
-        sampleRate: sampleRate,
-      );
-      await recognizer.setWords(words: true);
-
-      final file = File(convertedFilePath);
-      final totalBytes = await file.length();
-      final inputStream = file.openRead();
-
-      finalWords.clear();
-      int processedBytes = 0;
-
-      await for (final chunk
-          in inputStream.transform(StreamTransformer.fromBind(
-        (Stream<List<int>> stream) async* {
-          final buffer = BytesBuilder();
-          await for (var data in stream) {
-            buffer.add(data);
-            if (buffer.length >= chunkSize) {
-              yield buffer.takeBytes();
-            }
-          }
-          if (buffer.isNotEmpty) yield buffer.takeBytes();
-        },
-      ))) {
-        processedBytes += chunk.length;
-        await recognizer.acceptWaveformBytes(Uint8List.fromList(chunk));
-        setState(() {
-          _loadingProgress = processedBytes / totalBytes;
-        });
-      }
-
-      final result = await recognizer.getFinalResult();
-      final decoded = json.decode(result);
-
-      if (decoded['result'] != null) {
-        for (var wordData in decoded['result']) {
-          finalWords.add({
-            'word': wordData['word'],
-            'start': wordData['start'],
-            'end': wordData['end'],
-          });
-        }
+      String? pcmFile = await audioAnalysisModel.convertToPCM(widget.filePath);
+      if (pcmFile == null) {
+        print("PCM conversion failed");
+        return;
       }
 
       setState(() {
-        isTranscribing = false;
-        words = finalWords;
-        _lastHighlightedIndex = 0;
+        _loadingProgress = 0.1;
       });
+
+      // Wait for maxDuration to be available
+      while (maxDuration == Duration.zero) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+
+      final audioDurationSec = maxDuration.inMilliseconds / 1000.0;
+
+      // Transcribe using sherpa-onnx
+      final result = await TranscriptionService.transcribe(
+        modelDir: widget.selectedModelPath,
+        pcmFilePath: pcmFile,
+        audioDurationSec: audioDurationSec,
+        onProgress: (progress) {
+          if (mounted) {
+            setState(() {
+              _loadingProgress = 0.1 + progress * 0.9;
+            });
+          }
+        },
+      );
+
+      if (mounted) {
+        setState(() {
+          isTranscribing = false;
+          words = result;
+          _lastHighlightedIndex = 0;
+        });
+      }
     } catch (e) {
       print("Transcription error: $e");
+      if (mounted) {
+        setState(() {
+          isTranscribing = false;
+        });
+      }
     }
   }
 
@@ -364,7 +326,7 @@ class _PlaybackPageState extends State<PlaybackPage> {
           ),
         ],
       ),
-      body: !isModelLoaded || isTranscribing
+      body: isTranscribing
           ? LoadingIndicator(
               progress: _loadingProgress,
               message: "Transcribing audio...",
@@ -385,7 +347,6 @@ class _PlaybackPageState extends State<PlaybackPage> {
                                 LayoutBuilder(
                                   builder: (context, constraints) {
                                     final waveformWidth = constraints.maxWidth;
-                                    // Set initial selection to full range if not already set
                                     if (_selectionStartPx == null ||
                                         _selectionEndPx == null) {
                                       WidgetsBinding.instance

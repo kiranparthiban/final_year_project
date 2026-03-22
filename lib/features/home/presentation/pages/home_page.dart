@@ -470,14 +470,14 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     onTap: () => showModelSelectionDialog(
                                         context: context,
-                                        onModelSelected: (value) {
+                                        onModelSelected: (modelDir) {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       PlaybackPage(
                                                         filePath: file.path,
-                                                        selectedModelName:
-                                                            value,
+                                                        selectedModelPath:
+                                                            modelDir,
                                                         screenWidth:
                                                             MediaQuery.of(
                                                                     context)
