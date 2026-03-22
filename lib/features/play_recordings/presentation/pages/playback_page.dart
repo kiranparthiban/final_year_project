@@ -5,6 +5,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/data/audio_analysis_model.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/edit_drawer.dart';
 import 'package:test_audio_analysis_app/core/services/transcription_service.dart';
+import 'package:test_audio_analysis_app/core/services/model_manager.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/loading_indicator.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/audio_waveform_selector.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/widgets/audio_player_controls.dart';
@@ -14,12 +15,14 @@ import 'package:test_audio_analysis_app/features/about/presentation/pages/about_
 class PlaybackPage extends StatefulWidget {
   final String filePath;
   final String selectedModelPath;
+  final WhisperModel selectedModel;
   final double screenWidth;
 
   const PlaybackPage(
       {super.key,
       required this.filePath,
       required this.selectedModelPath,
+      required this.selectedModel,
       required this.screenWidth});
 
   @override
@@ -159,6 +162,9 @@ class _PlaybackPageState extends State<PlaybackPage> {
       // Transcribe using sherpa-onnx
       final result = await TranscriptionService.transcribe(
         modelDir: widget.selectedModelPath,
+        encoderFile: widget.selectedModel.encoderFile,
+        decoderFile: widget.selectedModel.decoderFile,
+        tokensFile: widget.selectedModel.tokensFile,
         pcmFilePath: pcmFile,
         audioDurationSec: audioDurationSec,
         onProgress: (progress) {

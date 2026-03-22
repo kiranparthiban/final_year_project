@@ -5,6 +5,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:test_audio_analysis_app/core/utils/list_model_dialog.dart';
+import 'package:test_audio_analysis_app/core/services/model_manager.dart';
 import 'package:test_audio_analysis_app/features/play_recordings/presentation/pages/playback_page.dart';
 import 'package:test_audio_analysis_app/features/about/presentation/pages/about_page.dart';
 
@@ -470,7 +471,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     onTap: () => showModelSelectionDialog(
                                         context: context,
-                                        onModelSelected: (modelDir) {
+                                        onModelSelected: (modelDir, model) {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) =>
@@ -478,6 +479,7 @@ class _HomePageState extends State<HomePage> {
                                                         filePath: file.path,
                                                         selectedModelPath:
                                                             modelDir,
+                                                        selectedModel: model,
                                                         screenWidth:
                                                             MediaQuery.of(
                                                                     context)

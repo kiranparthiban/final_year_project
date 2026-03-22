@@ -3,23 +3,40 @@ import 'dart:typed_data';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
 class TranscriptionService {
+  static bool _initialized = false;
+
+  static void _ensureInitialized() {
+    if (!_initialized) {
+      sherpa.initBindings();
+      _initialized = true;
+    }
+  }
+
   static Future<List<Map<String, dynamic>>> transcribe({
     required String modelDir,
+    required String encoderFile,
+    required String decoderFile,
+    required String tokensFile,
     required String pcmFilePath,
     required double audioDurationSec,
     Function(double)? onProgress,
   }) async {
+    _ensureInitialized();
     onProgress?.call(0.1);
 
     final config = sherpa.OfflineRecognizerConfig(
       model: sherpa.OfflineModelConfig(
         whisper: sherpa.OfflineWhisperModelConfig(
-          encoder: '$modelDir/tiny.en-encoder.int8.onnx',
-          decoder: '$modelDir/tiny.en-decoder.int8.onnx',
+          encoder: '$modelDir/$encoderFile',
+          decoder: '$modelDir/$decoderFile',
+          language: 'en',
+          task: 'transcribe',
+          enableTokenTimestamps: true,
         ),
-        tokens: '$modelDir/tiny.en-tokens.txt',
+        tokens: '$modelDir/$tokensFile',
         modelType: 'whisper',
         numThreads: 2,
+        debug: false,
       ),
     );
 
@@ -40,12 +57,35 @@ class TranscriptionService {
     // Get result
     final result = recognizer.getResult(stream);
 
-    // Convert token-level timestamps to word-level
-    final words = _tokensToWords(
-      tokens: result.tokens,
-      timestamps: result.timestamps,
-      audioDuration: audioDurationSec,
-    );
+    print("Sherpa result text: ${result.text}");
+    print("Sherpa tokens count: ${result.tokens.length}");
+    print("Sherpa timestamps count: ${result.timestamps.length}");
+
+    List<Map<String, dynamic>> words;
+
+    if (result.tokens.isNotEmpty && result.timestamps.isNotEmpty) {
+      // Use token-level timestamps for word-level output
+      words = _tokensToWords(
+        tokens: result.tokens,
+        timestamps: result.timestamps,
+        audioDuration: audioDurationSec,
+      );
+    } else if (result.text.isNotEmpty) {
+      // Fallback: split text into words without timestamps
+      final textWords = result.text.trim().split(RegExp(r'\s+'));
+      final duration = audioDurationSec;
+      final wordDuration = duration / textWords.length;
+      words = [];
+      for (int i = 0; i < textWords.length; i++) {
+        words.add({
+          'word': textWords[i],
+          'start': i * wordDuration,
+          'end': (i + 1) * wordDuration,
+        });
+      }
+    } else {
+      words = [];
+    }
 
     stream.free();
     recognizer.free();
@@ -85,11 +125,12 @@ class TranscriptionService {
 
       // Skip special tokens
       if (token.startsWith('<') || token.startsWith('[')) continue;
+      if (token.isEmpty) continue;
 
       // New word starts with a space or is the first token
       if (token.startsWith(' ') || currentWord.isEmpty) {
         // Save previous word
-        if (currentWord.isNotEmpty) {
+        if (currentWord.trim().isNotEmpty) {
           words.add({
             'word': currentWord.trim(),
             'start': wordStart,
@@ -104,16 +145,13 @@ class TranscriptionService {
     }
 
     // Save last word
-    if (currentWord.isNotEmpty) {
+    if (currentWord.trim().isNotEmpty) {
       words.add({
         'word': currentWord.trim(),
         'start': wordStart,
         'end': audioDuration,
       });
     }
-
-    // Filter out empty words
-    words.removeWhere((w) => (w['word'] as String).isEmpty);
 
     return words;
   }

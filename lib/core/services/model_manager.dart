@@ -5,11 +5,17 @@ import 'package:path_provider/path_provider.dart';
 class WhisperModel {
   final String name;
   final String displayName;
+  final String encoderFile;
+  final String decoderFile;
+  final String tokensFile;
   final Map<String, String> files; // filename -> download URL
 
   const WhisperModel({
     required this.name,
     required this.displayName,
+    required this.encoderFile,
+    required this.decoderFile,
+    required this.tokensFile,
     required this.files,
   });
 }
@@ -18,6 +24,9 @@ const List<WhisperModel> availableModels = [
   WhisperModel(
     name: 'whisper-tiny.en-int8',
     displayName: 'Whisper Tiny English (103 MB)',
+    encoderFile: 'tiny.en-encoder.int8.onnx',
+    decoderFile: 'tiny.en-decoder.int8.onnx',
+    tokensFile: 'tiny.en-tokens.txt',
     files: {
       'tiny.en-encoder.int8.onnx':
           'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny.en/resolve/main/tiny.en-encoder.int8.onnx',
@@ -25,6 +34,21 @@ const List<WhisperModel> availableModels = [
           'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny.en/resolve/main/tiny.en-decoder.int8.onnx',
       'tiny.en-tokens.txt':
           'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny.en/resolve/main/tiny.en-tokens.txt',
+    },
+  ),
+  WhisperModel(
+    name: 'whisper-base.en-int8',
+    displayName: 'Whisper Base English (161 MB) - Better accuracy',
+    encoderFile: 'base.en-encoder.int8.onnx',
+    decoderFile: 'base.en-decoder.int8.onnx',
+    tokensFile: 'base.en-tokens.txt',
+    files: {
+      'base.en-encoder.int8.onnx':
+          'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-base.en/resolve/main/base.en-encoder.int8.onnx',
+      'base.en-decoder.int8.onnx':
+          'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-base.en/resolve/main/base.en-decoder.int8.onnx',
+      'base.en-tokens.txt':
+          'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-base.en/resolve/main/base.en-tokens.txt',
     },
   ),
 ];

@@ -3,7 +3,7 @@ import 'package:test_audio_analysis_app/core/services/model_manager.dart';
 
 void showModelSelectionDialog({
   required BuildContext context,
-  required Function(String modelDir) onModelSelected,
+  required Function(String modelDir, WhisperModel model) onModelSelected,
 }) {
   showDialog(
     context: context,
@@ -15,7 +15,7 @@ void showModelSelectionDialog({
 }
 
 class _ModelSelectionDialog extends StatefulWidget {
-  final Function(String modelDir) onModelSelected;
+  final Function(String modelDir, WhisperModel model) onModelSelected;
 
   const _ModelSelectionDialog({required this.onModelSelected});
 
@@ -89,7 +89,7 @@ class _ModelSelectionDialogState extends State<_ModelSelectionDialog> {
       title: const Text('Select Speech Model'),
       content: SizedBox(
         width: double.maxFinite,
-        height: 200,
+        height: 250,
         child: ListView.builder(
           itemCount: availableModels.length,
           itemBuilder: (context, index) {
@@ -131,7 +131,7 @@ class _ModelSelectionDialogState extends State<_ModelSelectionDialog> {
                         final dir = await ModelManager.modelDir(model);
                         if (context.mounted) {
                           Navigator.of(context).pop();
-                          widget.onModelSelected(dir);
+                          widget.onModelSelected(dir, model);
                         }
                       }
                     : null,
