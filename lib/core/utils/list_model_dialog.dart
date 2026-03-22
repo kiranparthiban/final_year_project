@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 List<String> modelNames = [
   "vosk-model-small-en-us-0.15",
   "vosk-model-small-en-in-0.4",
-  "vosk-model-small-hi-0.22",
+  "vosk-model-en-us-0.22-lgraph",
 ];
 
 void showModelSelectionDialog({

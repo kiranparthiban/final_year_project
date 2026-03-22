@@ -1,7 +1,7 @@
 // This file was created to move audio analysis and playback logic from playback_page.dart
 import 'dart:async';
 import 'dart:io';
-import 'package:ffmpeg_kit_flutter_full/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
