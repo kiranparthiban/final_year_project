@@ -495,36 +495,35 @@ class _AudioAnalysisPageState extends State<AudioAnalysisPage> {
                               height: 120,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade300),
+                                border: Border.all(color: const Color(0xFF30363D)),
                               ),
                               child: GestureDetector(
                                 onTap: _captureWaveformAsImage,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: AudioFileWaveforms(
-                                  animationCurve: Curves.decelerate,
-                                  animationDuration:
-                                      const Duration(milliseconds: 500),
-                                  size: Size(
-                                      MediaQuery.of(context).size.width, 150),
-                                  playerController: playerController,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: Colors.grey[100],
-                                  ),
-                                  continuousWaveform: true,
-                                  enableSeekGesture: false,
-                                  waveformType: WaveformType.fitWidth,
-                                  playerWaveStyle: PlayerWaveStyle(
-                                    fixedWaveColor:
-                                        Theme.of(context).primaryColor,
-                                    liveWaveColor:
-                                        Theme.of(context).primaryColor,
-                                    showSeekLine: true,
-                                    scaleFactor: 300,
-                                    waveThickness: 2,
-                                    spacing: 2.5,
-                                  ),
+                                    animationCurve: Curves.decelerate,
+                                    animationDuration:
+                                        const Duration(milliseconds: 500),
+                                    size: Size(
+                                        MediaQuery.of(context).size.width, 120),
+                                    playerController: playerController,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    continuousWaveform: true,
+                                    enableSeekGesture: false,
+                                    waveformType: WaveformType.fitWidth,
+                                    playerWaveStyle: PlayerWaveStyle(
+                                      fixedWaveColor:
+                                          Theme.of(context).primaryColor,
+                                      liveWaveColor:
+                                          Theme.of(context).primaryColor,
+                                      showSeekLine: true,
+                                      scaleFactor: 300,
+                                      waveThickness: 2,
+                                      spacing: 2.5,
+                                    ),
                                   ),
                                 ),
                               ),

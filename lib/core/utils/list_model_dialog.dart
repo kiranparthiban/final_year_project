@@ -94,8 +94,12 @@ class _ModelSelectionDialogState extends State<_ModelSelectionDialog> {
       ),
       child: Container(
         width: 420,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
         padding: const EdgeInsets.all(24),
-        child: Column(
+        child: SingleChildScrollView(
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -246,14 +250,13 @@ class _ModelSelectionDialogState extends State<_ModelSelectionDialog> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: downloadingModel == null
-                    ? () => Navigator.of(context).pop()
-                    : null,
+                onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancel',
                     style: TextStyle(color: AppColors.textSecondary)),
               ),
             ),
           ],
+        ),
         ),
       ),
     );
