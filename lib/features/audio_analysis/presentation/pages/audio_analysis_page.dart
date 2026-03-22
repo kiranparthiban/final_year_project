@@ -370,7 +370,7 @@ class _AudioAnalysisPageState extends State<AudioAnalysisPage> {
     final duration = widget.endSecond - widget.startSecond;
 
     await FFmpegKit.execute(
-        '-y -ss ${widget.startSecond} -t $duration -i "${widget.filePath}" "$trimmedPath"');
+        '-y -ss ${widget.startSecond} -t $duration -i "${widget.filePath}" -acodec pcm_s16le -ar 44100 -ac 1 "$trimmedPath"');
 
     setState(() {
       trimmedAudioPath = trimmedPath;

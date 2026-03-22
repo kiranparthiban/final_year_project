@@ -46,7 +46,7 @@ class _IntensityPitchAnalysisPageState
   // Audio player variables
   late PlayerController playerController;
   bool isPlaying = false;
-  Duration currentDuration = Duration.zero;
+  final ValueNotifier<Duration> _currentDuration = ValueNotifier(Duration.zero);
   Duration maxDuration = Duration.zero;
   StreamSubscription? _playerStateSub;
   StreamSubscription? _completionSub;
@@ -278,9 +278,7 @@ class _IntensityPitchAnalysisPageState
       });
       
       _playerStateSub = playerController.onCurrentDurationChanged.listen((milliseconds) {
-        setState(() {
-          currentDuration = Duration(milliseconds: milliseconds);
-        });
+        _currentDuration.value = Duration(milliseconds: milliseconds);
       });
       
       _completionSub = playerController.onCompletion.listen((_) {
@@ -305,7 +303,7 @@ class _IntensityPitchAnalysisPageState
   }
 
   void seekForward() {
-    final newPosition = currentDuration.inMilliseconds + 5000; // 5 seconds
+    final newPosition = _currentDuration.value.inMilliseconds + 5000;
     if (newPosition < maxDuration.inMilliseconds) {
       playerController.seekTo(newPosition);
     } else {
@@ -314,7 +312,7 @@ class _IntensityPitchAnalysisPageState
   }
 
   void seekBackward() {
-    final newPosition = currentDuration.inMilliseconds - 5000; // 5 seconds
+    final newPosition = _currentDuration.value.inMilliseconds - 5000;
     if (newPosition > 0) {
       playerController.seekTo(newPosition);
     } else {
@@ -330,6 +328,7 @@ class _IntensityPitchAnalysisPageState
   void dispose() {
     _playerStateSub?.cancel();
     _completionSub?.cancel();
+    _currentDuration.dispose();
     playerController.dispose();
     super.dispose();
   }
@@ -605,33 +604,42 @@ class _IntensityPitchAnalysisPageState
                               const SizedBox(height: 16),
                               Column(
                                 children: [
-                                  Slider(
-                                    value: currentDuration.inMilliseconds
-                                        .clamp(0, maxDuration.inMilliseconds > 0 ? maxDuration.inMilliseconds : 1)
-                                        .toDouble(),
-                                    min: 0,
-                                    max: maxDuration.inMilliseconds > 0
-                                        ? maxDuration.inMilliseconds.toDouble()
-                                        : 1.0,
-                                    onChanged: onSliderChanged,
-                                    activeColor: Colors.purple,
-                                    inactiveColor: Colors.grey[300],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          formatDuration(currentDuration),
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        Text(
-                                          formatDuration(maxDuration),
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
+                                  ValueListenableBuilder<Duration>(
+                                    valueListenable: _currentDuration,
+                                    builder: (context, currentDuration, _) {
+                                      return Column(
+                                        children: [
+                                          Slider(
+                                            value: currentDuration.inMilliseconds
+                                                .clamp(0, maxDuration.inMilliseconds > 0 ? maxDuration.inMilliseconds : 1)
+                                                .toDouble(),
+                                            min: 0,
+                                            max: maxDuration.inMilliseconds > 0
+                                                ? maxDuration.inMilliseconds.toDouble()
+                                                : 1.0,
+                                            onChanged: onSliderChanged,
+                                            activeColor: Colors.purple,
+                                            inactiveColor: Colors.grey[300],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  formatDuration(currentDuration),
+                                                  style: const TextStyle(fontSize: 12),
+                                                ),
+                                                Text(
+                                                  formatDuration(maxDuration),
+                                                  style: const TextStyle(fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
