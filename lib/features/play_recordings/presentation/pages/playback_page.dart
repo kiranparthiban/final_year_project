@@ -338,16 +338,17 @@ class _PlaybackPageState extends State<PlaybackPage> {
               message: "Transcribing audio...",
             )
           : words.isEmpty
-              ? const Center(child: Text("No transcription found."))
+              ? const Center(child: Text("No transcription found.",
+                  style: TextStyle(color: Color(0xFF8B949E))))
               : SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(8),
                     child: Column(
                       children: [
                         Card(
                           child: Padding(
                             padding: const EdgeInsets.only(
-                                left: 8, right: 8, top: 8, bottom: 0),
+                                left: 10, right: 10, top: 10, bottom: 4),
                             child: Column(
                               children: [
                                 LayoutBuilder(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/services.dart';
+import 'package:test_audio_analysis_app/core/theme/app_colors.dart';
 
 class AudioWaveformSelector extends StatefulWidget {
   final PlayerController playerController;
@@ -14,7 +15,6 @@ class AudioWaveformSelector extends StatefulWidget {
   final Function(DragUpdateDetails) onPanUpdate;
   final Function(DragEndDetails) onPanEnd;
   final void Function() editTimeLine;
-
   final Function(double?)? onSelectionStartChanged;
   final Function(double?)? onSelectionEndChanged;
 
@@ -47,12 +47,9 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Theme.of(context).primaryColor,
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        color: AppColors.bgSurface,
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,15 +70,16 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                     playerController: widget.playerController,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey[100],
+                      color: AppColors.bgDark,
                     ),
                     continuousWaveform: true,
                     enableSeekGesture: false,
                     waveformType: WaveformType.fitWidth,
-                    playerWaveStyle: PlayerWaveStyle(
-                      fixedWaveColor: Colors.grey,
-                      liveWaveColor: Theme.of(context).primaryColor,
+                    playerWaveStyle: const PlayerWaveStyle(
+                      fixedWaveColor: AppColors.bgSurface,
+                      liveWaveColor: AppColors.primaryColor,
                       showSeekLine: true,
+                      seekLineColor: AppColors.primaryLight,
                       scaleFactor: 300,
                       waveThickness: 2,
                       spacing: 2.5,
@@ -102,14 +100,10 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .primaryColor
-                                .withOpacity(0.15),
+                            color: AppColors.primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Theme.of(context)
-                                  .primaryColor
-                                  .withOpacity(0.5),
+                              color: AppColors.primaryColor.withOpacity(0.4),
                               width: 1.5,
                             ),
                           ),
@@ -121,7 +115,7 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
+                              gradient: AppColors.primaryGradient,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -140,7 +134,7 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
+                              gradient: AppColors.primaryGradient,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -164,13 +158,11 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Draggable icon above the handle
                         GestureDetector(
                           onPanUpdate: (details) {
                             const double speedMultiplier = 2.0;
                             final newStartPx = (widget.selectionStartPx ?? 0) +
                                 details.delta.dx * speedMultiplier;
-                            // Prevent overlap with end handle
                             final adjustedStartPx =
                                 widget.selectionEndPx != null &&
                                         newStartPx >
@@ -178,7 +170,6 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                                                 minHandleDistance
                                     ? widget.selectionEndPx! - minHandleDistance
                                     : newStartPx;
-
                             if (adjustedStartPx < 0) {
                               widget.onSelectionStartChanged?.call(0);
                             } else {
@@ -190,25 +181,19 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                             height: 24,
                             width: 24,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColors.bgCard,
                               shape: BoxShape.circle,
-                              boxShadow: const [
+                              border: Border.all(
+                                  color: AppColors.primaryColor, width: 2),
+                              boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
+                                  color: AppColors.primaryColor.withOpacity(0.3),
+                                  blurRadius: 6,
                                 ),
                               ],
-                              border: Border.all(
-                                color: Theme.of(context).primaryColor,
-                                width: 2,
-                              ),
                             ),
-                            child: Icon(
-                              Icons.chevron_left,
-                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
+                            child: const Icon(Icons.chevron_left,
+                                color: AppColors.primaryColor, size: 18),
                           ),
                         ),
                         MouseRegion(
@@ -217,15 +202,8 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                             width: 3,
                             height: 35,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
+                              color: AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(4),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
                             ),
                           ),
                         ),
@@ -241,29 +219,25 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Draggable icon above the handle
                         GestureDetector(
                           onPanUpdate: (details) {
                             const double speedMultiplier = 2.0;
                             final newEndPx = (widget.selectionEndPx ?? 0) +
                                 details.delta.dx * speedMultiplier;
-                            // Prevent overlap with start handle
-                            final adjustedEndPx = widget.selectionStartPx !=
-                                        null &&
-                                    newEndPx <
-                                        widget.selectionStartPx! +
-                                            minHandleDistance
-                                ? widget.selectionStartPx! + minHandleDistance
-                                : newEndPx;
-
-                            // Get the waveform width
+                            final adjustedEndPx =
+                                widget.selectionStartPx != null &&
+                                        newEndPx <
+                                            widget.selectionStartPx! +
+                                                minHandleDistance
+                                    ? widget.selectionStartPx! +
+                                        minHandleDistance
+                                    : newEndPx;
                             final waveformWidth = (widget
                                         .waveformKey.currentContext
                                         ?.findRenderObject() as RenderBox?)
                                     ?.size
                                     .width ??
                                 double.infinity;
-
                             if (adjustedEndPx > waveformWidth) {
                               widget.onSelectionEndChanged?.call(waveformWidth);
                             } else {
@@ -274,25 +248,19 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                             height: 24,
                             width: 24,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColors.bgCard,
                               shape: BoxShape.circle,
-                              boxShadow: const [
+                              border: Border.all(
+                                  color: AppColors.primaryColor, width: 2),
+                              boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
+                                  color: AppColors.primaryColor.withOpacity(0.3),
+                                  blurRadius: 6,
                                 ),
                               ],
-                              border: Border.all(
-                                color: Theme.of(context).primaryColor,
-                                width: 2,
-                              ),
                             ),
-                            child: Icon(
-                              Icons.chevron_right,
-                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
+                            child: const Icon(Icons.chevron_right,
+                                color: AppColors.primaryColor, size: 18),
                           ),
                         ),
                         MouseRegion(
@@ -301,15 +269,8 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
                             width: 3,
                             height: 35,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
+                              color: AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(4),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
                             ),
                           ),
                         ),
@@ -323,53 +284,39 @@ class _AudioWaveformSelectorState extends State<AudioWaveformSelector> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap: () => widget.editTimeLine(),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    "Start: ${widget.startSec.toStringAsFixed(2)}s",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
+              _timeChip(
+                "Start: ${widget.startSec.toStringAsFixed(2)}s",
                 onTap: widget.editTimeLine,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    "End: ${widget.endSec.toStringAsFixed(2)}s",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
+              ),
+              _timeChip(
+                "End: ${widget.endSec.toStringAsFixed(2)}s",
+                onTap: widget.editTimeLine,
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _timeChip(String text, {required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryColor,
+            fontSize: 12,
+          ),
+        ),
       ),
     );
   }

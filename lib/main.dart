@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:test_audio_analysis_app/features/splash/presentation/pages/splash_page.dart';
-import 'package:test_audio_analysis_app/features/trail/presentation/pages/trail_page.dart';
 import 'core/theme/app_theme.dart';
 import 'package:flutter/services.dart';
 
@@ -10,6 +9,11 @@ void main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    systemNavigationBarColor: Color(0xFF0D1117),
+  ));
   runApp(const MyApp());
 }
 
@@ -21,10 +25,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'CSS SPEECH ANALYZER',
-      home: // DateTime.now().isAfter(DateTime(2025, 5, 20))
-         // ? TrailPage()
-           SplashPage(),
-      theme: AppTheme.lightTheme,
+      home: const SplashPage(),
+      theme: AppTheme.darkTheme,
     );
   }
 }

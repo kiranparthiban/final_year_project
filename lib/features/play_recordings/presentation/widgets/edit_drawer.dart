@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:test_audio_analysis_app/core/theme/app_colors.dart';
 
 class EditDrawer extends StatefulWidget {
   final String title;
@@ -49,19 +50,13 @@ class _EditDrawerState extends State<EditDrawer> {
     super.dispose();
   }
 
-  void _onCancel() {
-    Navigator.of(context).maybePop();
-  }
+  void _onCancel() => Navigator.of(context).maybePop();
 
   void _onConfirm() {
     if (widget.isTimeLine) {
-      if (widget.onConfirmTimeLine != null) {
-        widget.onConfirmTimeLine!(_startController.text, _endController.text);
-      }
+      widget.onConfirmTimeLine?.call(_startController.text, _endController.text);
     } else {
-      if (widget.onConfirm != null) {
-        widget.onConfirm!(_controller.text);
-      }
+      widget.onConfirm?.call(_controller.text);
     }
     Navigator.of(context).maybePop();
   }
@@ -70,60 +65,41 @@ class _EditDrawerState extends State<EditDrawer> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Drawer(
+        backgroundColor: AppColors.bgCard,
         width: 300,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
               const SizedBox(height: 24),
               widget.isTimeLine
                   ? Column(
                       children: [
-                        TextField(
-                          controller: _startController,
-                          keyboardType: TextInputType.number,
-                          autofocus: false,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(","),
-                          ],
-                          decoration: const InputDecoration(
-                            labelText: 'Start (Sec)',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextField(
-                          controller: _endController,
-                          keyboardType: TextInputType.number,
-                          autofocus: false,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(","),
-                          ],
-                          decoration: const InputDecoration(
-                            labelText: 'End (Sec)',
-                            border: OutlineInputBorder(),
-                          ),
-                        )
+                        _buildField(_startController, 'Start (Sec)'),
+                        const SizedBox(height: 12),
+                        _buildField(_endController, 'End (Sec)'),
                       ],
                     )
-                  : TextField(
-                      controller: _controller,
-                      autofocus: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Edit',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
+                  : _buildField(_controller, 'Edit'),
               const Spacer(),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: _onCancel,
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.border),
+                        foregroundColor: AppColors.textSecondary,
+                      ),
                       child: const Text('Cancel'),
                     ),
                   ),
@@ -131,10 +107,6 @@ class _EditDrawerState extends State<EditDrawer> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _onConfirm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
-                      ),
                       child: const Text('Confirm'),
                     ),
                   ),
@@ -143,6 +115,32 @@ class _EditDrawerState extends State<EditDrawer> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      keyboardType: label.contains('Sec') ? TextInputType.number : null,
+      autofocus: false,
+      inputFormatters: label.contains('Sec')
+          ? [FilteringTextInputFormatter.deny(",")]
+          : null,
+      style: const TextStyle(color: AppColors.textPrimary),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primaryColor),
+        ),
+        filled: true,
+        fillColor: AppColors.bgSurface,
       ),
     );
   }
